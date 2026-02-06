@@ -6,6 +6,7 @@ Web scraper for Chilean Mercado Publico licitaciones. Extracts tender details, o
 
 - **Web Scraping**: Automatically extracts tender information from Mercado Publico
 - **Document Extraction**: Downloads and processes attached technical documents
+- - **CAPTCHA Solver**: Automated CAPTCHA recognition and solving using OCR technology
 - **Comparative Analysis**: Analyzes provider bids and technical specifications
 - **Data Export**: Exports tender data to multiple formats (JSON, CSV, Excel)
 - **Headless Browser**: Uses Selenium for JavaScript-heavy page rendering
@@ -17,6 +18,7 @@ Web scraper for Chilean Mercado Publico licitaciones. Extracts tender details, o
 - Python 3.8+
 - Chrome/Chromium browser
 - pip (Python package manager)
+- - Tesseract OCR
 
 ## Installation
 
@@ -110,10 +112,44 @@ class MercadoPublicoScraper:
     def close()
 ```
 
+### Using CAPTCHA Solver
+
+```python
+from scraper.captcha_solver import CaptchaSolver
+from scraper.ocr import OCRProcessor
+from selenium import webdriver
+
+# Initialize driver and solver
+driver = webdriver.Chrome()
+ocr = OCRProcessor()
+solver = CaptchaSolver(driver, ocr)
+
+# Navigate to page with CAPTCHA
+driver.get("https://www.mercadopublico.cl/...")
+
+# Solve CAPTCHA
+if solver.solve():
+    print("CAPTCHA solved successfully")
+```
+
+### Automated Document Download
+
+```python
+from scraper.downloader import MercadoPublicoDownloader
+
+# Initialize downloader
+downloader = MercadoPublicoDownloader(output_dir="./downloads")
+
+# Download all documents from a tender
+tender_url = "https://www.mercadopublico.cl/Procurement/Modules/RFB/DetailsAcquisition.aspx?qs=..."
+files = downloader.download_documents(tender_url)
+print(f"Downloaded {len(files)} files")
+```
+
 ## Limitations
 
-- **CAPTCHA Protection**: Respects CAPTCHA and does not attempt to bypass them
-- **Rate Limiting**: Implements delays between requests
+- **CAPTCHA Protection**: Automated CAPTCHA solving using OCR (accuracy may vary)
+- Rate Limiting**: Implements delays between requests
 - **Dynamic Content**: Uses Selenium for JavaScript rendering
 - **Large Documents**: PDF extraction may be resource-intensive
 
