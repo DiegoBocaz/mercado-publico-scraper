@@ -26,6 +26,14 @@ class TestBiddingOpportunity(unittest.TestCase):
         self.assertEqual(opp.submission_count, 0)
         self.assertEqual(len(opp.technical_attachments), 0)
         self.assertIsInstance(opp.extraction_timestamp, str)
+        # Verify timestamp is valid ISO format
+        from datetime import datetime
+        try:
+            datetime.fromisoformat(opp.extraction_timestamp)
+            timestamp_valid = True
+        except ValueError:
+            timestamp_valid = False
+        self.assertTrue(timestamp_valid, "Timestamp should be valid ISO format")
         
     def test_initialization_with_values(self):
         """Test creating opportunity with specific values"""

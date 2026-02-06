@@ -169,16 +169,25 @@ class BiddingDataExtractor:
             self.logger.error(f"Failed to extract tender {tender_id}: {e}")
             return None
             
-    async def extract_multiple_async(self, tender_ids: List[str]) -> List[BiddingOpportunity]:
-        """Extract multiple tenders asynchronously"""
-        results = []
+    async def extract_multiple_async(self, tender_ids: List[str], max_concurrent: int = 3) -> List[BiddingOpportunity]:
+        """Extract multiple tenders asynchronously with concurrency control"""
+        semaphore = asyncio.Semaphore(max_concurrent)
         
-        for tid in tender_ids:
-            opportunity = self.extract_single_tender(tid)
-            if opportunity:
-                results.append(opportunity)
-            await asyncio.sleep(0.5)  # Rate limiting
-            
+        async def extract_with_limit(tender_id: str) -> Optional[BiddingOpportunity]:
+            async with semaphore:
+                # Run synchronous extraction in executor to avoid blocking
+                loop = asyncio.get_event_loop()
+                result = await loop.run_in_executor(None, self.extract_single_tender, tender_id)
+                await asyncio.sleep(0.5)  # Rate limiting
+                return result
+        
+        # Extract all tenders concurrently with rate limiting
+        tasks = [extract_with_limit(tid) for tid in tender_ids]
+        all_results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Filter out failures and exceptions
+        results = [r for r in all_results if isinstance(r, BiddingOpportunity)]
+        
         return results
         
     def shutdown(self):

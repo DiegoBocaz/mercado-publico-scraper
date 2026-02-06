@@ -139,19 +139,13 @@ def main():
     print("=" * 70)
     
     # Example 1: Single extraction
-    # example_single_extraction()
-    
-    # Example 2: Batch extraction
-    # asyncio.run(example_batch_extraction())
-    
-    # Example 3: Custom export
-    # asyncio.run(example_custom_export())
-    
-    # Example 4: Error handling
-    # example_error_handling()
+    example_single_extraction()
     
     print("\n" + "=" * 70)
-    print("Uncomment examples in main() to run specific scenarios")
+    print("Additional examples available:")
+    print("  - Batch extraction (asyncio.run(example_batch_extraction()))")
+    print("  - Custom export (asyncio.run(example_custom_export()))")
+    print("  - Error handling (example_error_handling())")
     print("=" * 70)
 
 
